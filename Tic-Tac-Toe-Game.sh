@@ -4,7 +4,7 @@ NUMBEROFCOLUMNS=3
 PLACES=0
 declare -A GameBoard
 
-function ResetBoard()
+ResetBoard()
 {
 
    for ((row=0; row<NUMBEROFROWS; row++))
@@ -17,3 +17,15 @@ function ResetBoard()
    done
 }
 ResetBoard
+
+ChecksSymbol()
+{
+   if [ $(( RANDOM%2 )) -eq 1 ]
+   then
+      PLAYERSYMBOL=X
+   else
+      PLAYERSYMBOL=O
+   fi
+   echo "PlayerSymbol - $PLAYERSYMBOL"
+}
+ChecksSymbol
