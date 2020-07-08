@@ -2,6 +2,8 @@
 NUMBEROFROWS=3
 NUMBEROFCOLUMNS=3
 PLACES=0
+row=0
+column=0
 declare -A GameBoard
 
 ResetBoard()
@@ -43,3 +45,15 @@ CheckToss()
 }
 CheckToss
 
+TicTacToeBoard()
+{
+   for (( row=0; row<NUMBEROFROWS; row++ ))
+   do
+      for (( column=0; column<NUMBEROFCOLUMNS; column++ ))
+      do
+         echo -n "  ${board[$row,$column]}  "
+      done
+         printf "\n"
+   done
+}
+TicTacToeBoard
