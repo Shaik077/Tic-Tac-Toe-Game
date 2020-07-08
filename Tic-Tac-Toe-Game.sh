@@ -22,10 +22,24 @@ ChecksSymbol()
 {
    if [ $(( RANDOM%2 )) -eq 1 ]
    then
-      PLAYERSYMBOL=X
-   else
       PLAYERSYMBOL=O
+   else
+      PLAYERSYMBOL=X
    fi
    echo "PlayerSymbol - $PLAYERSYMBOL"
 }
 ChecksSymbol
+
+CheckToss()
+{
+   if [ $(( RANDOM%2 )) -eq 1 ]
+   then
+      PlayerTurn=1
+      echo "PlayerFirstChance"
+   else
+      PlayerTurn=0
+      echo "PlayerSecondChance"
+   fi
+}
+CheckToss
+
