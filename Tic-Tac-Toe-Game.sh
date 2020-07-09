@@ -118,10 +118,11 @@ InputToBoard()
             	echo "Computer Won"
             	exit
          	fi
-				if [ $Corner == true ] || [ $Center == true ]
+				if [ $Corner == true ] || [ $Center == true ||  $Side == true ]
          	then
                     	$Corner=false
                 	$Center=false
+                        $Side=false
          	fi
                 	PlayerTurn=1
       		fi
@@ -380,7 +381,7 @@ CheckForComputerWin()
          return
       fi
 }
-CheckCorners()
+CheckCornerAndCenterAndSide()
 {
       if [ ${Board[0,0]} != $PlayerSymbol ] && [ ${Board[0,0]} != $ComputerSymbol ]
       then
@@ -398,10 +399,27 @@ CheckCorners()
       then
          Board[2,2]=$ComputerSymbol
            Corner=true
-       elif [ ${board[1,1]} != $PlayerSymbol ] && [ ${board[1,1]} != $ComputerSymbol ]
+       elif [ ${Board[1,1]} != $PlayerSymbol ] && [ ${Board[1,1]} != $ComputerSymbol ]
       then
          Board[1,1]=$ComputerSymbol
          Center=true
+        lif [ ${Board[0,1]} != $PlayerSymbol ] && [ ${Board[0,1]} != $ComputerSymbol ]
+      then
+         Board[0,1]=$ComputerSymbol
+         Side=true
+      elif [ ${Board[1,2]} != $PlayerSymbol ] && [ ${Board[1,2]} != $ComputerSymbol ]
+      then
+         Board[1,2]=$ComputerSymbol
+         Side=true
+      elif [ ${Board[2,1]} != $PlayerSymbol ] && [ ${Board[2,1]} != $ComputerSymbol ]
+      then
+         Board[2,1]=$ComputerSymbol
+         Side=true
+      elif [ ${Board[1,0]} != $PlayerSymbol ] && [ ${Board[1,0]} != $ComputerSymbol ]
+      then
+         Board[1,0]=$ComputerSymbol
+         Side=true
+      fi
       fi
 }
 InputToBoard
