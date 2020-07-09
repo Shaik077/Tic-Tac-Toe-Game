@@ -11,24 +11,28 @@ ResetBoard()
    do
       for ((column=0; column<NUMBER_OF_COLUMNS; column++))
       do
-         GameBoard[$row,$column]=$PLACES
+         Board[$row,$column]=$PLACES
                  ((PLACES++))  
       done
    done
 }
 ResetBoard
 
+
 ChecksSymbol()
 {
    if [ $(( RANDOM%2 )) -eq 1 ]
    then
       PlayerSymbol=O
+      ComputerSymbol=X
    else
       PlayerSymbol=X
+      ComputerSymbol=O
    fi
-   echo "PlayerSymbol - $PlayerSymbol"
+   echo "PlayerSymbol - $PlayerSymbol"  "ComputerSymbol"- $ComputerSymbol
 }
 ChecksSymbol
+
 
 CheckToss()
 {
@@ -38,10 +42,11 @@ CheckToss()
       echo "PlayerFirstChance"
    else
       PlayerTurn=0
-      echo "PlayerSecondChance"
+      echo "ComputerSecondChance"
    fi
 }
 CheckToss
+
 
 TicTacToeBoard()
 {
@@ -49,12 +54,14 @@ TicTacToeBoard()
    do
       for (( column=0; column<NUMBEROFCOLUMNS; column++ ))
       do
-         echo -n "  ${board[$row,$column]}  "
+         echo -n "  ${Board[$row,$column]}  "
       done
          printf "\n"
    done
 }
 TicTacToeBoard
+
+
 inputToBoard()
 {
   local rowIndex=''
@@ -84,7 +91,7 @@ inputToBoard()
         columnIndex=$(( $columnIndex - 1 ))
      fi
 
-     if [[ "${Board[$rowIndex,$columnIndex]}" -eq "$PlayerSymbol" ]] || [[ "${Board[$rowIndex,$columnIndex]}" -eq "$computerSymbol" ]]
+     if [[ "${Board[$rowIndex,$columnIndex]}" -eq "$PlayerSymbol" ]] || [[ "${Board[$rowIndex,$columnIndex]}" -eq "$ComputerSymbol" ]]
      then
         echo "Invalid move"
         ((row--))
@@ -101,7 +108,8 @@ inputToBoard()
 	echo "Match Tie"
 }
 
-function CheckResult()
+
+CheckResult()
 {
    if [ $((${Board[0,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[0,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[0,2]})) -eq $(($PlayerSymbol)) ]
    then
@@ -130,5 +138,120 @@ function CheckResult()
    else
       echo 0
    fi
-}  
+} 
 
+ 
+  ComputerTurn(){
+#for Rows
+   for ((row=0; row<NUMBEROFROWS; row++))
+   do 
+      if [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row)),$(($column+1))]} == $PlayerSymbol ]
+      then
+          if [ ${Board[$row,$(($column+2))]} != $ComputerSymbol ]
+          then
+             Board[$row,$(($column+2))]=$ComputerSymbol
+             break
+          fi
+      elif [ ${Board[$row,$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
+      then
+          if [ ${Board[$row,$column]} != $ComputerSymbol ]
+          then
+             Board[$row,$column]=$ComputerSymbol
+             break
+          fi
+      elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
+      then
+          if [ ${Board[$row,$(($column+1))]} != $ComputerSymbol ]
+          then
+             Board[$row,$(($column+1))]=$ComputerSymbol
+             break
+          fi
+      fi
+   done
+
+#For Columns
+   for ((column=0; column<NUM_OF_COLUMNS; column++))
+   do
+      if [ ${Board[$row,$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$column]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$(($row+2)),$column]} != $ComputerSymbol ]
+         then
+            Board[$(($row+2)),$column]=$ComputerSymbol
+            break
+         fi
+      elif [ ${Board[$(($row+1)),$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$row,$column]} != $ComputerSymbol ]
+         then
+            Board[$row,$column]=$ComputerSymbol
+            break
+          fi
+      elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$(($row+1)),$column]} != $ComputerSymbol ]
+         then
+            Board[$(($row+1)),$column]=$ComputerSymbol
+            break
+         fi
+      fi
+   done
+
+#For Diagonal
+      if [ ${Board[$row,$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$(($row+2)),$(($column+2))]} != $ComputerSymbol ]
+         then
+            Board[$(($row+2)),$(($column+2))]=$ComputerSymbol
+            return
+         fi
+      elif [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$(($column+2))]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$row,$column]} != $ComputerSymbol ]
+         then
+            Board[$row,$column]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$(($column+2))]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$(($row+1)),$(($column+1))]} != $ComputerSymbol ]
+         then
+            Board[$(($row+1)),$(($column+1))]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$row,$(($column+2))]} != $ComputerSymbol ]
+         then
+            Board[$row,$(($column+2))]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$(($row+2)),$column]} != $ComputerSymbol ]
+         then
+            Board[$(($row+2)),$column]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
+      then
+         if [ ${Board[$(($row+1)),$(($column+1))]} != $ComputerSymbol ]
+         then
+            Board[$(($row+1)),$(($column+1))]=$ComputerSymbol
+            return
+          fi
+      else
+         while [ true ]
+         do
+            local row=$(( RANDOM % $NUMBEROFROWS ))
+            local column=$(( RANDOM % $NUM_OF_COLUMNS ))
+
+            if [ ${Board[$row,$column]} == $PlayerSymbol ] | [ ${Board[$row,$column]} == $ComputerSymbol ]
+            then
+               continue
+            else
+               Board[$row,$column]=$ComputerSymbol
+               break
+            fi
+         done
+      fi
+}
