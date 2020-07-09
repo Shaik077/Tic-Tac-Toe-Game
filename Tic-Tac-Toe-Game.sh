@@ -4,6 +4,9 @@ NUMBEROFCOLUMNS=3
 PLACES=0
 declare -A Board
 
+Center=''
+Corner=''
+
 ResetBoard()
 {
 
@@ -69,7 +72,7 @@ InputToBoard()
 
   for (( row=0; row<$LENGTH; row++))
   do
-  TicTacToeBoard
+   TicTacToeBoard
   read PlayerPlace
 
   if [ $PlayerPlace -gt $LENGTH ]
@@ -95,17 +98,35 @@ InputToBoard()
      then
         echo "Invalid move"
         ((row--))
-     fi
+     else
 
 		Board[$rowIndex,$columnIndex]=$PlayerSymbol
-		if [ $(CheckResult) -eq 1  ]
-        then
-           echo "You Won"
+		if [ $(CheckResult $PlayerSymbol) -eq 1  ]
+               then
+                  echo "You Won"
            return 0
-        fi
-  fi
-  done
-	echo "Match Tie"
+           fi
+           fi
+           fi
+      else
+				CheckForComputerWin
+         	ComputerTurn
+         	playerTurn=1
+				CheckCornersAndCenter
+         	if [ $(CheckResult $ComputerSymbol) -eq 1  ]
+         	then
+            	echo "Computer Won"
+            	exit
+         	fi
+				if [ $Corner == true ] || [ $Center == true ]
+         	then
+                    	$Corner=false
+                	$Center=false
+         	fi
+                	PlayerTurn=1
+      		fi
+   		done
+   			echo "Match Tie"
 }
 
 
@@ -364,19 +385,23 @@ CheckCorners()
       if [ ${Board[0,0]} != $PlayerSymbol ] && [ ${Board[0,0]} != $ComputerSymbol ]
       then
          Board[0,0]=$ComputerSymbol
-         return
+         Corner=true
       elif [ ${Board[0,2]} != $PlayerSymbol ] && [ ${Board[0,2]} != $ComputerSymbol ]
       then
          Board[0,2]=$ComputerSymbol
-         return
+         Corner=true
       elif [ ${Board[2,0]} != $PlayerSymbol ] && [ ${Board[2,0]} != $ComputerSymbol ]
       then
          Board[2,0]=$ComputerSymbol
-         return
+         Corner=true
       elif [ ${Board[2,2]} != $PlayerSymbol ] && [ ${Board[2,2]} != $ComputerSymbol ]
       then
          Board[2,2]=$ComputerSymbol
-         return
+           Corner=true
+       elif [ ${board[1,1]} != $PlayerSymbol ] && [ ${board[1,1]} != $ComputerSymbol ]
+      then
+         Board[1,1]=$ComputerSymbol
+         Center=true
       fi
 }
 InputToBoard
