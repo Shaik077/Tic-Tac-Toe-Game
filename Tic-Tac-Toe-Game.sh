@@ -257,4 +257,105 @@ ComputerTurn(){
          done
       fi
 }
-InputToBoard
+
+CheckForComputerWin()
+{
+
+   for ((row=0; row<NUMBEROFROWS; row++))
+   do
+      if [ ${Board[$row,$column]} == $ComputerSymbol ] && [ ${Board[$(($row)),$(($column+1))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$row,$(($column+2))]} != $PlayerSymbol ]
+          then
+             Board[$row,$(($column+2))]=$ComputerSymbol
+             break
+          fi
+      elif [ ${Board[$row,$(($column+1))]} == $ComputerSymbol ] && [ ${Board[$row,$(($column+2))]} == $ComputerSymbol ]
+      then
+          if [ ${Board[$row,$column]} != $PlayerSymbol ]
+          then
+             Board[$row,$column]=$ComputerSymbol
+             break
+          fi
+      elif [ ${Board[$row,$column]} == $ComputerSymbol ] && [ ${Board[$row,$(($column+2))]} == $ComputerSymbol ]
+      then
+          if [ ${Board[$row,$(($column+1))]} != $PlayerSymbol ]
+          then
+             Board[$row,$(($column+1))]=$ComputerSymbol
+             break
+          fi
+      fi
+   done
+
+   for ((column=0; column<NUMBEROFCOLUMNS; column++))
+   do
+      if [ ${Board[$row,$column]} == $ComputerSymbol ] &&  [ ${Board[$(($row+1)),$column]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$(($row+2)),$column]} != $PlayerSymbol ]
+         then
+            Board[$(($row+2)),$column]=$ComputerSymbol
+            break
+         fi
+      elif [ ${Board[$(($row+1)),$column]} == $ComputerSymbol ] && [ ${Board[$(($row+2)),$column]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$row,$column]} != $PlayerSymbol ]
+         then
+            Board[$row,$column]=$ComputerSymbol
+            break
+          fi
+      elif [ ${Board[$row,$column]} == $ComputerSymbol ] && [ ${Board[$(($row+2)),$column]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$(($row+1)),$column]} != $PlayerSymbol ]
+         then
+            Board[$(($row+1)),$column]=$ComputerSymbol
+            break
+         fi
+      fi
+   done
+
+      if [ ${Board[$row,$column]} == $ComputerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$(($row+2)),$(($column+2))]} != $PlayerSymbol ]
+         then
+            Board[$(($row+2)),$(($column+2))]=$ComputerSymbol
+            return
+         fi
+      elif [ ${Board[$(($row+1)),$(($column+1))]} == $ComputerSymbol ] && [ ${Board[$(($row+2)),$(($column+2))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$row,$column]} != $PlayerSymbol ]
+         then
+            Board[$row,$column]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$row,$column]} == $ComputerSymbol ] && [ ${Board[$(($row+2)),$(($column+2))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$(($row+1)),$(($column+1))]} != $PlayerSymbol ]
+         then
+            Board[$(($row+1)),$(($column+1))]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$(($row+2)),$column]} == $ComputerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$row,$(($column+2))]} != $PlayerSymbol ]
+         then
+            Board[$row,$(($column+2))]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$(($row+1)),$(($column+1))]} == $ComputerSymbol ] && [ ${Board[$row,$(($column+2))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$(($row+2)),$column]} != $PlayerSymbol ]
+         then
+            Board[$(($row+2)),$column]=$ComputerSymbol
+            return
+          fi
+      elif [ ${Board[$(($row+2)),$column]} == $ComputerSymbol ] && [ ${Board[$row,$(($column+2))]} == $ComputerSymbol ]
+      then
+         if [ ${Board[$(($row+1)),$(($column+1))]} != $PlayerSymbol ]
+         then
+            Board[$(($row+1)),$(($column+1))]=$ComputerSymbol
+            return
+          fi
+      else
+         return
+      fi
+}
