@@ -359,3 +359,24 @@ CheckForComputerWin()
          return
       fi
 }
+CheckCorners()
+{
+      if [ ${Board[0,0]} != $PlayerSymbol ] && [ ${Board[0,0]} != $ComputerSymbol ]
+      then
+         Board[0,0]=$ComputerSymbol
+         return
+      elif [ ${Board[0,2]} != $PlayerSymbol ] && [ ${Board[0,2]} != $ComputerSymbol ]
+      then
+         Board[0,2]=$ComputerSymbol
+         return
+      elif [ ${Board[2,0]} != $PlayerSymbol ] && [ ${Board[2,0]} != $ComputerSymbol ]
+      then
+         Board[2,0]=$ComputerSymbol
+         return
+      elif [ ${Board[2,2]} != $PlayerSymbol ] && [ ${Board[2,2]} != $ComputerSymbol ]
+      then
+         Board[2,2]=$ComputerSymbol
+         return
+      fi
+}
+InputToBoard
