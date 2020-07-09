@@ -11,7 +11,7 @@ ResetBoard()
    do
       for ((column=0; column<NUMBER_OF_COLUMNS; column++))
       do
-         Board[$row,$column]=$PLACES
+          Board[$row,$column]=$PLACES
                  ((PLACES++))  
       done
    done
@@ -62,7 +62,7 @@ TicTacToeBoard()
 TicTacToeBoard
 
 
-inputToBoard()
+InputToBoard()
 {
   local rowIndex=''
   local columnIndex=''
@@ -141,7 +141,7 @@ CheckResult()
 } 
 
  
-  ComputerTurn(){
+ComputerTurn(){
 #for Rows
    for ((row=0; row<NUMBEROFROWS; row++))
    do 
@@ -169,6 +169,7 @@ CheckResult()
       fi
    done
 
+
 #For Columns
    for ((column=0; column<NUM_OF_COLUMNS; column++))
    do
@@ -195,6 +196,7 @@ CheckResult()
          fi
       fi
    done
+
 
 #For Diagonal
       if [ ${Board[$row,$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ]
@@ -255,3 +257,4 @@ CheckResult()
          done
       fi
 }
+InputToBoard
