@@ -1,231 +1,272 @@
 #!/bin/bash -x
 NUMBEROFROWS=3
 NUMBEROFCOLUMNS=3
-PLACES=0
-declare -A Board
+Places=0
+PlayerSymbol=''
+ComputerSymbol=''
+LENGTH=$(( $NUMBEROFROWS * $NUMBEROFCOLUMNS ))
 
+cell=1
+playerCell=''
+playerTurn=''
 Center=''
 Corner=''
+Side=''
+Blocked=''
 
-ResetBoard()
+declare -A Board
+
+resetBoard()
 {
 
    for ((row=0; row<NUMBEROFROWS; row++))
    do
-      for ((column=0; column<NUMBER_OF_COLUMNS; column++))
+      for ((column=0; j<NUMBEROFCOLUMNS; column++))
       do
-          Board[$row,$column]=$PLACES
-                 ((PLACES++))  
+         Board[$row,$column]=$Places
       done
    done
 }
-ResetBoard
+resetBoard
 
-
-ChecksSymbol()
-{
-   if [ $(( RANDOM%2 )) -eq 1 ]
-   then
-      PlayerSymbol=O
-      ComputerSymbol=X
-   else
-      PlayerSymbol=X
-      ComputerSymbol=O
-   fi
-   echo "PlayerSymbol - $PlayerSymbol"  "ComputerSymbol"- $ComputerSymbol
-}
-ChecksSymbol
-
-
-CheckToss()
-{
-   if [ $(( RANDOM%2 )) -eq 1 ]
-   then
-      PlayerTurn=1
-      echo "PlayerFirstChance"
-   else
-      PlayerTurn=0
-      echo "ComputerSecondChance"
-   fi
-}
-CheckToss
-
-
-TicTacToeBoard()
+function initializeBoard()
 {
    for (( row=0; row<NUMBEROFROWS; row++ ))
    do
       for (( column=0; column<NUMBEROFCOLUMNS; column++ ))
       do
-         echo -n "  ${Board[$row,$column]}  "
+         Board[$x,$y]=$cell
+         ((cell++))
       done
-         printf "\n"
    done
 }
-TicTacToeBoard
+initializeBoard
 
-
-InputToBoard()
+CheckSymbol()
 {
-  local rowIndex=''
-  local columnIndex=''
+   if [ $(( RANDOM%2 )) -eq 1 ]
+   then
+      PlayerSymbol=X
+      ComputerSymbol=O
+   else
+      ComputerSymbol=X
+      PlayerSymbol=O
+   fi
+   echo "PlayerSymbol - $PlayerSymbol"   "ComputerSymbol"- "$ComputerSymbol"
+}
+CheckSymbol
 
-  for (( row=0; row<$LENGTH; row++))
-  do
-   TicTacToeBoard
-  read PlayerPlace
+Checktoss()
+{
+   if [ $(( RANDOM%2 )) -eq 1 ]
+   then
+      playerTurn=1
+      echo "Player should play first" 
+   else
+      playerTurn=0
+      echo "Computer should play first"
+   fi
+}
+Checktoss
 
-  if [ $PlayerPlace -gt $LENGTH ]
-  then
-     echo "Invalid"
-     ((row--))
-  else
-  rowIndex=$(( $PlayerPlace / $NUMBEROFROWS ))
-     if [ $(( $PlayerPlace % $NUMBEROFROWS )) -eq 0 ]
-     then
-        rowIndex=$(( $rowIndex - 1 ))
-     fi
-
-  columnIndex=$(( $PlayerPlace %  $NUMBEROFCOLUMNS ))
-     if [ $columnIndex -eq 0 ]
-     then
-        columnIndex=$(( $columnIndex + 2 ))
-     else
-        columnIndex=$(( $columnIndex - 1 ))
-     fi
-
-     if [[ "${Board[$rowIndex,$columnIndex]}" -eq "$PlayerSymbol" ]] || [[ "${Board[$rowIndex,$columnIndex]}" -eq "$ComputerSymbol" ]]
-     then
-        echo "Invalid move"
-        ((row--))
-     else
-
-		Board[$rowIndex,$columnIndex]=$PlayerSymbol
-		if [ $(CheckResult $PlayerSymbol) -eq 1  ]
-               then
-                  echo "You Won"
-           return 0
-           fi
-           fi
-           fi
-      else
-				CheckForComputerWin
-         	ComputerTurn
-         	playerTurn=1
-				CheckCornersAndCenter
-         	if [ $(CheckResult $ComputerSymbol) -eq 1  ]
-         	then
-            	echo "Computer Won"
-            	exit
-         	fi
-				if [ $Corner == true ] || [ $Center == true ||  $Side == true ]
-         	then
-                    	$Corner=false
-                	$Center=false
-                        $Side=false
-         	fi
-                	PlayerTurn=1
-      		fi
-   		done
-   			echo "Match Tie"
+DisplayBoard()
+{
+   local row=0
+   local column=0
+   for (( row=0; row<NUMBEROFROWS; row++ ))
+   do
+      for (( column=0; j<NUMBEROFCOLUMNS; column++ ))
+      do
+         echo -n "  ${Board[$row,$column]}  "
+      done
+	 printf "\n"
+   done
 }
 
-
-CheckResult()
+inputToBoard()
 {
-   if [ $((${Board[0,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[0,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[0,2]})) -eq $(($PlayerSymbol)) ]
+   local rowindex=''
+   local columnindex=''
+
+   for (( row=0; row<$LENGTH; row++))
+   do
+      DisplayBoard
+      if [ $playerTurn -eq 1 ]
+      then
+      read  -p "Choose input : " playerCell
+
+         if [ $playerCell -gt $LENGTH ]
+         then
+            echo "invalid move"
+            printf "\n"
+            ((row--))
+         else
+            iindex=$(( $playerCell / $NUMBEROFROWS ))
+               if [ $(( $playerCell % $NUMBEROFROWS )) -eq 0 ]
+               then
+                  rowindex=$(( $rowindex - 1 ))
+               fi
+
+            columnindex=$(( $playerCell %  $NUMBEROFCOLUMNS ))
+               if [ $columnindex -eq 0 ]
+               then
+                  columnindex=$(( $columnindex + 2 ))
+               else
+                  columnindex=$(( $columnindex - 1 ))
+               fi
+
+               if [ "${Board[$rowindex,$columnindex]}" == "$PlayerSymbol" ] || [ "${Board[$rowindex,$columnindex]}" == "$ComputerSymbol" ]
+               then
+                  echo "invalid move"
+                  printf "\n"
+                  ((row--))
+               else
+                  Board[$rowindex,$columnindex]=$PlayerSymbol
+                  playerTurn=0
+
+                  if [ $(checkWinner $PlayerSymbol) -eq 1  ]
+                  then
+                     echo "You Won"
+                     return 0
+                  fi
+               fi
+            fi
+      else
+         checkForComputerWin
+         if [ $(checkWinner $ComputerSymbol) -eq 1  ]
+         then
+            echo "Computer Won"
+            return 0
+         fi
+         computerTurn
+         if [[ $Blocked == true ]]
+         then
+            Blocked=false
+         else
+            checkCornersCenterSides
+            if [ $Corner == true ] || [ $Center == true ] || [ $Side == true ]
+               then
+                  Corner=false
+                  Center=false
+                  Side=false
+            fi
+         fi
+         playerTurn=1
+      fi
+   done
+   echo "Match Tie"
+}
+
+checkWinner()
+{
+   local symbol=$1
+
+   if [ ${Board[0,0]} == $symbol ] && [ ${Board[0,1]} == $symbol ] && [ ${Board[0,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[1,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,2]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[1,0]} == $symbol ] && [ ${Board[1,1]} == $symbol ] && [ ${Board[1,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[2,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[2,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[2,2]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[2,0]} == $symbol ] && [ ${Board[2,1]} == $symbol ] && [ ${Board[2,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[0,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[2,0]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[0,0]} == $symbol ] && [ ${Board[1,0]} == $symbol ] && [ ${Board[2,0]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[0,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[2,1]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[0,1]} == $symbol ] && [ ${Board[1,1]} == $symbol ] && [ ${Board[2,1]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[0,2]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,2]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[2,2]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[0,2]} == $symbol ] && [ ${Board[1,2]} == $symbol ] && [ ${Board[2,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[0,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[2,2]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[0,0]} == $symbol ] && [ ${Board[1,1]} == $symbol ] && [ ${Board[2,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${Board[2,0]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[1,1]})) -eq $(($PlayerSymbol)) ] && [ $((${Board[0,2]})) -eq $(($PlayerSymbol)) ]
+   elif [ ${Board[2,0]} == $symbol ] && [ ${Board[1,1]} == $symbol ] && [ ${Board[0,2]} == $symbol ]
    then
       echo 1
    else
       echo 0
    fi
-} 
+}
 
- 
-ComputerTurn(){
-#for Rows
-   for ((row=0; row<NUMBEROFROWS; row++))
-   do 
-      if [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row)),$(($column+1))]} == $PlayerSymbol ]
-      then
-          if [ ${Board[$row,$(($column+2))]} != $ComputerSymbol ]
-          then
-             Board[$row,$(($column+2))]=$ComputerSymbol
-             break
-          fi
-      elif [ ${Board[$row,$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
-      then
-          if [ ${Board[$row,$column]} != $ComputerSymbol ]
-          then
-             Board[$row,$column]=$ComputerSymbol
-             break
-          fi
-      elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
-      then
-          if [ ${Board[$row,$(($column+1))]} != $ComputerSymbol ]
-          then
-             Board[$row,$(($column+1))]=$ComputerSymbol
-             break
-          fi
-      fi
-   done
-
-
-#For Columns
-   for ((column=0; column<NUM_OF_COLUMNS; column++))
-   do
-      if [ ${Board[$row,$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$column]} == $PlayerSymbol ]
-      then
-         if [ ${Board[$(($row+2)),$column]} != $ComputerSymbol ]
+computerTurn()
+{
+#is
+   if [[ $Blocked == false ]]
+   then
+      for ((row=0; row<NUMBEROFROWS; row++))
+      do
+         if [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row)),$(($column+1))]} == $PlayerSymbol ]
          then
-            Board[$(($row+2)),$column]=$ComputerSymbol
-            break
+           if [ ${Board[$row,$(($column+2))]} != $ComputerSymbol ]
+           then
+              Board[$row,$(($column+2))]=$ComputerSymbol
+              Blocked=true
+              break
+           fi
+         elif [ ${Board[$row,$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
+         then
+            if [ ${Board[$row,$column]} != $ComputerSymbol ]
+            then
+               Board[$row,$column]=$ComputerSymbol
+               Blocked=true
+               break
+            fi
+         elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
+         then
+            if [ ${Board[$row,$(($column+1))]} != $ComputerSymbol ]
+            then
+               Board[$row,$(($column+1))]=$ComputerSymbol
+               Blocked=true
+               break
+            fi
          fi
-      elif [ ${Board[$(($row+1)),$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ]
-      then
-         if [ ${Board[$row,$column]} != $ComputerSymbol ]
+      done
+
+#columns
+   elif [[ $Blocked == false ]]
+   then
+      for ((column=0; column<NUMBEROFCOLUMNS; column++))
+      do
+         if [ ${Board[$row,$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$column]} == $PlayerSymbol ]
          then
-            Board[$row,$column]=$ComputerSymbol
-            break
-          fi
-      elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ]
-      then
-         if [ ${Board[$(($row+1)),$column]} != $ComputerSymbol ]
+            if [ ${Board[$(($row+2)),$column]} != $ComputerSymbol ]
+            then
+               Board[$(($row+2)),$column]=$ComputerSymbol
+               Blocked=true
+               break
+            fi
+         elif [ ${Board[$(($row+1)),$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ]
          then
-            Board[$(($row+1)),$column]=$ComputerSymbol
-            break
+            if [ ${Board[$row,$column]} != $ComputerSymbol ]
+            then
+               Board[$row,$column]=$ComputerSymbol
+               Blocked=true
+               break
+            fi
+         elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ]
+         then
+            if [ ${Board[$(($row+1)),$column]} != $ComputerSymbol ]
+            then
+               Board[$(($row+1)),$column]=$ComputerSymbol
+               Blocked=true
+               break
+            fi
          fi
-      fi
-   done
+      done
 
+#Diagonal
 
-#For Diagonal
+   elif [[ $Blocked == false ]]
+   then
+
       if [ ${Board[$row,$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ]
       then
          if [ ${Board[$(($row+2)),$(($column+2))]} != $ComputerSymbol ]
          then
             Board[$(($row+2)),$(($column+2))]=$ComputerSymbol
+            Blocked=true
             return
          fi
       elif [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$(($column+2))]} == $PlayerSymbol ]
@@ -233,6 +274,7 @@ ComputerTurn(){
          if [ ${Board[$row,$column]} != $ComputerSymbol ]
          then
             Board[$row,$column]=$ComputerSymbol
+            Blocked=true
             return
           fi
       elif [ ${Board[$row,$column]} == $PlayerSymbol ] && [ ${Board[$(($row+2)),$(($column+2))]} == $PlayerSymbol ]
@@ -240,6 +282,7 @@ ComputerTurn(){
          if [ ${Board[$(($row+1)),$(($column+1))]} != $ComputerSymbol ]
          then
             Board[$(($row+1)),$(($column+1))]=$ComputerSymbol
+            Blocked=true
             return
           fi
       elif [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ]
@@ -247,6 +290,7 @@ ComputerTurn(){
          if [ ${Board[$row,$(($column+2))]} != $ComputerSymbol ]
          then
             Board[$row,$(($column+2))]=$ComputerSymbol
+            Blocked=true
             return
           fi
       elif [ ${Board[$(($row+1)),$(($column+1))]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
@@ -254,6 +298,7 @@ ComputerTurn(){
          if [ ${Board[$(($row+2)),$column]} != $ComputerSymbol ]
          then
             Board[$(($row+2)),$column]=$ComputerSymbol
+            Blocked=true
             return
           fi
       elif [ ${Board[$(($row+2)),$column]} == $PlayerSymbol ] && [ ${Board[$row,$(($column+2))]} == $PlayerSymbol ]
@@ -261,29 +306,18 @@ ComputerTurn(){
          if [ ${Board[$(($row+1)),$(($column+1))]} != $ComputerSymbol ]
          then
             Board[$(($row+1)),$(($column+1))]=$ComputerSymbol
+            Blocked=true
             return
-          fi
-      else
-         while [ true ]
-         do
-            local row=$(( RANDOM % $NUMBEROFROWS ))
-            local column=$(( RANDOM % $NUM_OF_COLUMNS ))
-
-            if [ ${Board[$row,$column]} == $PlayerSymbol ] | [ ${Board[$row,$column]} == $ComputerSymbol ]
-            then
-               continue
-            else
-               Board[$row,$column]=$ComputerSymbol
-               break
-            fi
-         done
+         fi
       fi
+   fi
 }
 
-CheckForComputerWin()
-{
 
-   for ((row=0; row<NUMBEROFROWS; row++))
+checkForComputerWin()
+{
+#Rows
+   for ((row=0; row<NUMBER_OF_ROWS; row++))
    do
       if [ ${Board[$row,$column]} == $ComputerSymbol ] && [ ${Board[$(($row)),$(($column+1))]} == $ComputerSymbol ]
       then
@@ -309,7 +343,8 @@ CheckForComputerWin()
       fi
    done
 
-   for ((column=0; column<NUMBEROFCOLUMNS; column++))
+#columns
+   for ((column=0; column<NUMBER_OF_COLUMNS; column++))
    do
       if [ ${Board[$row,$column]} == $ComputerSymbol ] &&  [ ${Board[$(($row+1)),$column]} == $ComputerSymbol ]
       then
@@ -335,6 +370,7 @@ CheckForComputerWin()
       fi
    done
 
+#Diagonal
       if [ ${Board[$row,$column]} == $ComputerSymbol ] &&  [ ${Board[$(($row+1)),$(($column+1))]} == $ComputerSymbol ]
       then
          if [ ${Board[$(($row+2)),$(($column+2))]} != $PlayerSymbol ]
@@ -381,7 +417,8 @@ CheckForComputerWin()
          return
       fi
 }
-CheckCornerAndCenterAndSide()
+
+checkCornersCenterSides()
 {
       if [ ${Board[0,0]} != $PlayerSymbol ] && [ ${Board[0,0]} != $ComputerSymbol ]
       then
@@ -398,12 +435,12 @@ CheckCornerAndCenterAndSide()
       elif [ ${Board[2,2]} != $PlayerSymbol ] && [ ${Board[2,2]} != $ComputerSymbol ]
       then
          Board[2,2]=$ComputerSymbol
-           Corner=true
-       elif [ ${Board[1,1]} != $PlayerSymbol ] && [ ${Board[1,1]} != $ComputerSymbol ]
+         Corner=true
+      elif [ ${Board[1,1]} != $PlayerSymbol ] && [ ${Board[1,1]} != $ComputerSymbol ]
       then
          Board[1,1]=$ComputerSymbol
          Center=true
-        lif [ ${Board[0,1]} != $PlayerSymbol ] && [ ${Board[0,1]} != $ComputerSymbol ]
+      elif [ ${Board[0,1]} != $PlayerSymbol ] && [ ${Board[0,1]} != $ComputerSymbol ]
       then
          Board[0,1]=$ComputerSymbol
          Side=true
@@ -420,6 +457,6 @@ CheckCornerAndCenterAndSide()
          Board[1,0]=$ComputerSymbol
          Side=true
       fi
-      fi
 }
-InputToBoard
+inputToBoard
+DisplayBoard
