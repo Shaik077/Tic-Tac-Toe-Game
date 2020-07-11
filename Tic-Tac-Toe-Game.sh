@@ -15,7 +15,7 @@ CornerAvailable=''
 SideAvailable=''
 Blocked=''
 
-declare -ABoard
+declare -A Board
 
 resetBoard()
 {
